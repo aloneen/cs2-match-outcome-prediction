@@ -259,7 +259,7 @@ Map Win Rate & 0.0529 & Positive & Weak \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.95\columnwidth]{jfig6_corr.png}
 \caption{Pearson correlation matrix. All feature-target correlations $|r| < 0.15$.}
