@@ -750,7 +750,8 @@ story.append(P("GB typically achieves the highest hold-out accuracy at greater c
 
 # ── 5. EXPERIMENTAL SETUP ─────────────────────────────────────────────────────
 story.append(P("5. Experimental Setup", H1))
-story.append(P("All experiments run in Python 3.14 using scikit-learn 1.x with "
+story.append(P("All experiments run in Python 3.14 using scikit-learn 1.x "
+               "(Pedregosa et al., 2011) with "
                "random_state=42 throughout. Full code: "
                "github.com/aloneen/cs2-match-outcome-prediction. "
                "Macro F1 is the primary metric; AUC-ROC is secondary. "
@@ -1044,12 +1045,10 @@ REFS = [
     "Broms, E., &amp; Nordansjö, W. (2024). Predicting Counter-Strike matches using machine learning models. Bachelor's Thesis, Department of Statistics, Lund University.",
     "Friedman, J. H. (2001). Greedy function approximation: A gradient boosting machine. <i>Annals of Statistics, 29</i>(5), 1189–1232.",
     "griffindesroches. (2025). <i>CS2 HLTV Professional Match Statistics Dataset.</i> Kaggle.",
-    "Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <i>The elements of statistical learning</i> (2nd ed.). Springer.",
     "HLTV.org. (2025). Professional CS2 match statistics and rankings. Retrieved October 2025.",
     "Hodge, V. J., Devlin, S., Sephton, N., Block, F., Cowling, P. I., &amp; Drachen, A. (2019). Win prediction in multi-player esports. <i>IEEE Transactions on Games, 13</i>(4), 368–379.",
     "Hosmer, D. W., Lemeshow, S., &amp; Sturdivant, R. X. (2013). <i>Applied logistic regression</i> (3rd ed.). Wiley.",
     "Katona, A., Belis, D., Engel, E., Thalmeier, F., &amp; van Eetvelde, H. (2019). Counter-Strike: GO — win probability model and kill impact metric. <i>Proc. MLSA@ECML-PKDD</i>, Würzburg.",
-    "Kothari, C. R. (2004). <i>Research methodology: Methods and techniques</i> (2nd ed.). New Age International.",
     "Newzoo. (2024). <i>Global esports and live streaming market report 2024.</i> Newzoo BV.",
     "Pedregosa, F., et al. (2011). Scikit-learn: Machine learning in Python. <i>JMLR, 12</i>, 2825–2830.",
     "Semenoff, L. (2020). Predicting the outcome of CS:GO games using machine learning. Undergraduate Dissertation, University of Stirling.",

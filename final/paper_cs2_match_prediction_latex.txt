@@ -333,7 +333,7 @@ GB typically achieves the highest hold-out accuracy at greater computational cos
 
 \section{Experimental Setup}
 
-All experiments run in Python 3.11 using scikit-learn 1.x with
+All experiments run in Python 3.11 using scikit-learn 1.x \citep{Pedregosa2011} with
 \texttt{random\_state=42} throughout. Full code is available at
 \url{https://github.com/aloneen/cs2-match-outcome-prediction}. Macro F1 is the
 primary metric; AUC-ROC is secondary. The naive baseline (always predict Win) is
@@ -645,10 +645,6 @@ Friedman, J.~H. (2001). Greedy function approximation: A gradient boosting machi
 griffindesroches. (2025). \textit{CS2 HLTV Professional Match Statistics Dataset}.
 Kaggle.
 
-\bibitem[Hastie et al.(2009)]{Hastie2009}
-Hastie, T., Tibshirani, R., \& Friedman, J. (2009).
-\textit{The elements of statistical learning} (2nd ed.). Springer.
-
 \bibitem[HLTV.org(2025)]{HLTV2025}
 HLTV.org. (2025). \textit{Professional CS2 match statistics and rankings}.
 Retrieved October 2025.
@@ -661,11 +657,6 @@ Hodge, V.~J., Devlin, S., Sephton, N., Block, F., Cowling, P.~I., \& Drachen, A.
 \bibitem[Hosmer et al.(2013)]{Hosmer2013}
 Hosmer, D.~W., Lemeshow, S., \& Sturdivant, R.~X. (2013).
 \textit{Applied logistic regression} (3rd ed.). Wiley.
-
-\bibitem[Kothari(2004)]{Kothari2004}
-Kothari, C.~R. (2004).
-\textit{Research methodology: Methods and techniques} (2nd ed.).
-New Age International.
 
 \bibitem[Pedregosa et al.(2011)]{Pedregosa2011}
 Pedregosa, F., et al.\ (2011). Scikit-learn: Machine learning in Python.
