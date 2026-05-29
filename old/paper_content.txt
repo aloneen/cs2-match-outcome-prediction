@@ -1,0 +1,488 @@
+Pages: 13
+=== PAGE 1 ===
+International Journal of Information Management Data Insights 1 (2021) 100007
+Contents lists available at ScienceDirect
+International Journal of Information Management Data
+Insights
+journal homepage: www.elsevier.com/locate/jjimei
+Fake news detection: A hybrid CNN-RNN based deep learning approach
+Jamal Abdul Nasir a, b , Osama Subhani Khan b, Iraklis Varlamis c ,∗
+a Data Science Institute, National University of Ireland Galway, Ireland
+b Department of Computer Science, International Islamic University Islamabad, Pakistan
+c Department of Informatics & Telematics, Harokopio University of Athens, Greece
+a r t i c l e i n f o a b s t r a c t
+Keywords: The explosion of social media allowed individuals to spread information without cost, with little investigation and
+Deep learning fewer filters than before. This amplified the old problem of fake news, which became a major concern nowadays
+Fake news detection due to the negative impact it brings to the communities. In order to tackle the rise and spreading of fake news,
+Misinformation
+automatic detection techniques have been researched building on artificial intelligence and machine learning.
+Disinformation
+The recent achievements of deep learning techniques in complex natural language processing tasks, make them
+Rumours
+CNN-RNN
+a promising solution for fake news detection too. This work proposes a novel hybrid deep learning model that
+combines convolutional and recurrent neural networks for fake news classification. The model was successfully
+validated on two fake news datasets (ISO and FA-KES), achieving detection results that are significantly better
+than other non-hybrid baseline methods. Further experiments on the generalization of the proposed model across
+different datasets, had promising results.
+1. Introduction tional services, such as Wikipedia, are also prone to false information or
+fake news ( Kumar et al., 2016 ). In addition to this, because some official
+With the rapid advancement in the field of artificial intelligence, news aggregators may deliberately spread false or fake news in order to
+a large number of experiments continue to be conducted in order to gain popularity, achieve some political objective, or earn money, the
+solve problems which were never considered in the context of computer problem is further intensified. Another factor contributing to the spread
+science. One such problem is that of fake news detection ( Kumar and of fake news may be organized astroturfing campaigns which attempt
+Shah, 2018; Pierri and Ceri, 2019 ). Since the access to news media has to mock or spoil a specific product or company, a society or a group of
+become very convenient, as soon as some noteworthy event occurs any- people, e.g. for political, social, or financial reasons ( Ratkiewicz et al.,
+where around the globe, different news sources tend to make their news 2011 ).
+eye catching in order to deliver news to as many people as possible on Fake news is considered to be one of the greatest threat
+=== PAGE 2 ===
+J.A. Nasir, O.S. Khan and I. Varlamis International Journal of Information Management Data Insights 1 (2021) 100007
+began with fake reporting of the Balakot strike and resulted in the deaths Wu et al., 2019 ), astroturfing ( Keller et al., 2020 ) etc. Concerning
+of military personnel and the loss of expensive military equipment. 3 misinformation, a recent study on its diffusion trends in various so-
+The term ‘fake news’ is often described in related literature as ‘mis- cial media across different periods ( Allcott et al., 2019 ) shows that
+information’, ‘disinformation’, ‘hoax’, and ‘rumor’, which are actually misinformation increases before major political events. According to
+different variations of false information. There are a variety of research Aswani et al. (2019) , the use of emotion and polarity of the associated
+projects, tools and applications for fact checking, and fake news detec- text can help in determining the authenticity of shared information.
+tion ( Zubiaga et al., 2018 ), which mostly examine the problem as a ve-
+racity classification. 2.1. Related datasets
+Misinformation is used to refer to the spreading of false information
+disregarding the true intent. False information can be the result of false One of the earliest works on the automatic detection of fake news was
+labeling (e.g. of persons in a photo), poor fact-checking, etc., and can by Vlachos and Riedel (2014) . Authors defined the task of fact-checking,
+easily spread among users that do not care much about the veracity of collected a dataset from two popular fact-checking websites and con-
+what they are reading or sharing. From an etymological point of view, sidered k-Nearest Neighbors classifiers for handling fact-checking as a
+the term combines the prefix mis’, which means “wrong ”or “mistaken ”, classification task. Wang (2017) released the LIAR dataset, which com-
+with information. Disinformation implies an intent to mislead the target prises 12.8K manually labelled short statements from PolitiFact. Several
+of information. It refers to false information that is disseminated in a tac- classifiers were compared on a six truthfulness levels classification task
+tical way in order to bias and manipulate facts. It is usually coined with and achieved better results by incorporating additional textual and con-
+the term “propaganda ”. The prefix dis- is used to indicate a reversal or textual features such as subject, speaker, history, etc.
+negative instance of information. Rumours and hoaxes are interchange- Ma et al. (2016) collected 5 million posts from Twitter and Sina
+ably used to refer to false information that is deliberately constructed Weibo micro blogs that comprised 778 reported events from which 64%
+to seem true. The facts that they report are either inaccurate or false, are rumors. No feature engineering techniques were applied to classify
+although they are presented as genuine. events using several baseline algorithms (i.e. Decision Tree, Random
+The dissemina
+=== PAGE 3 ===
+J.A. Nasir, O.S. Khan and I. Varlamis International Journal of Information Management Data Insights 1 (2021) 100007
+Task 7 (RumourEval 2019) released two Twitter based datasets for ru- that although neural networks perform better on larger datasets, NB
+mour evaluation. Although the datasets are publicly available, they con- can perform as good as neural networks on smaller datasets. Finally,
+tain only tweets and are limited to social media rumors. Elhadad et al. (2019) experimented using hybrid sets of features ex-
+tracted from online news content and textual metadata on three publicly
+2.2. Methods and models available datasets (ISOT, FA-KES and LIAR). Using DT, KNN, LR, SVM,
+Bernoulli NB, multinomial NB, LSVM, perceptron and neural networks
+According to the survey of Li et al. (2016) , the “discovery of truth ” they achieved a 100% accuracy on ISOT dataset, 62% accuracy on LIAR
+largely focused: i) on the detection of subject-predicate-object triples, dataset and a benchmark accuracy of 58% on FA-KES dataset.
+which represent the structured facts that are assessed for their credi- Hybrid methods are frequently employed for fake news detection.
+bility, and ii) on the classification of general text input using neural Ajao et al. (2018) have tested an LSTM-CNN variation, which in-
+networks trained on labeled texts from sites like PolitiFact.com. When cluded a 1D CNN immediately after the word embedding layer of
+no external evidence or user feedback is available there is limited con- the LSTM model, and achieved an accuracy of 0.80 in fake tweets
+text for credibility analysis. When external evidence exists in the form of prediction. Hybrid LSTM models that train the attention mechanism
+articles that confirm or refute a claim, the assessment of sources’ trust- using local semantic (topics) or user (profile) attentions have also
+worthiness, and claims’ credibility is possible using supervised classi- been proposed ( Long, 2017 ). The hybrid deep learning model of
+fiers. The later approach requires substantial feature modeling and rich Ruchansky et al. (2017) combines temporal representations of arti-
+lexicons to detect bias and subjectivity in the language style. cles using an RNN, with a fully connected layer that aggregates fea-
+DeClarE is an end-to-end neural network model proposed by tures from the users that reproduce the news. The hybrid model of
+Popat et al. (2018) for debunking fake news and false claims. It employs Hamdi et al. (2020) combines graph embeddings from the user follower
+evidences and counter-evidences extracted from the web to support or graph on Twitter with user features in order to evaluate the credibility
+refute a claim. Without feature engineering and manual interventions of sources and thus of the news they publish or share. The hybrid CNN
+authors achieved an overall 80% classification accuracy on four differ- model of Wang (2017) uses speaker profiles for training.
+ent datasets, by training a bi-directional LSTM model with a
+=== PAGE 4 ===
+J.A. Nasir, O.S. Khan and I. Varlamis International Journal of Information Management Data Insights 1 (2021) 100007
+ticles and discussing articles. This can be considered as an application • First, an extensive literature review is performed, using Google
+of stance detection. Scholar search and a search on related GitHub repositories, in order
+Research in Rumours is limited to social media. Rumor research to identify the relevant publications and experiments on different
+differs from fake news research, but it has similar characteristics. An datasets and propose a new model that fills existing gaps.
+unverified information circulating in social media constitutes a ru- • Then the proposed solution is introduced, which aims to fill the iden-
+mor which can or cannot be substantiated or debunked later with tified research gap: “the lack of thorough investigations on relevantly
+time; it is considered as an unconfirmed information rather than a new datasets and the lack of combinations of deep learning models
+hoax or false information that is deemed false ( Zubiaga et al., 2018; or neural networks for fake news detection ”.
+2017 ). • The novel hybrid deep learning model is evaluated on a publicly
+The research related to rumors in social media is still in its early available dataset and compared with state of the art approaches on
+stages. Although, the literature is scarce in this domain, there has been the same dataset in order to justify its validity. The results produced
+an increase in the interest of rumors in social media ( Ma et al., 2015; by Elhadad et al. (2019) on the FA-KES dataset is the comparison
+Zubiaga and Ji, 2014 ). A complete outline of architecture of a rumor base. Additional baselines are produced with the help of a total of
+classification system is proposed by Zubiaga and Ji (2014) , and con- seven supervised machine learning classification techniques, and al-
+sists of four stages: (1) rumor detection; (2) rumor tracking; (3) rumor low further validation of the proposed model.
+stance classification and (4) rumor veracity classification. Much of the • Finally, further experimentation is performed on the ISOT dataset
+work done is focused more on stance classification of rumors ( Lukasik ( Ahmed et al., 2018 ) in order to state the possible future work in
+et al., 2015; Zeng et al., 2016; Zubiaga et al., 2016 ). Rumor veracity this research direction and reach to a conclusion.
+classification is also much focused by researchers in this domain ( Jin
+et al., 2016; Zubiaga and Ji, 2014 ). 3.1. Neural Networks and decisions
+A conclusion to the analysis of the related literature, is that fake news
+has played a significant role in many real time disasters and resulted in Neural Networks take their input in the form of numerical vectors or
+severe consequences for journalism, economy and political instability. matrices and perform calculations, such as additions and matrix multi-
+In order to tackle fake news, manual interventions are of no use du
+=== PAGE 5 ===
+J.A. Nasir, O.S. Khan and I. Varlamis International Journal of Information Management Data Insights 1 (2021) 100007
+The anatomy of an LSTM cell is shown in Fig. 2 . An LSTM cell is
+composed of weights and three different gates for learning. At each time
+step, there is an input gate for the current input, an output gate to pre-
+dict values and a forget gate that is used to discard information that is
+irrelevant.
+3.5. Hybrid CNN-RNN model
+The proposed model makes use of the ability of the CNN to extract
+local features and of the LSTM to learn long-term dependencies. First,
+a CNN layer of Conv1D is used for processing the input vectors and
+extracting the local features that reside at the text-level. The output of
+the CNN layer (i.e. the feature maps) are the input for the RNN layer
+of LSTM units/cells that follows. The RNN layer uses the local features
+Fig. 1. An 1-D convolutional operation.
+extracted by the CNN and learns the long-term dependencies of the local
+features of news articles that classify them as fake or real. The proposed
+These word vectors are then used for training a CNN. The training is model is depicted in Fig. 3 .
+carried out by specifying a kernel size and a number of filters. A CNN The combination of CNN-RNN has been proven successful in several
+can be multi-dimensional. classification and regression tasks, since they have the ability to capture
+In the case of text classification or NLP, a one-dimensional CNN both local and sequential characteristics of input data. For example, they
+(Conv1D) is used generally. Conv1D deals with one dimensional arrays have been used for emotion detection ( Kollias and Zafeiriou, 2020 ) and
+representing word vectors. In a CNN, a filter of fixed size window iter- sign language recognition from video streams ( Masood et al., 2018 ),
+ates through the training data, which at each step multiplies the input taking advantage of their ability to learn scene features using the CNN
+with the filter weights and gives an output that is stored in an output and sequential features using the RNN. In the case of NLP tasks, RNN
+array. This output array is a feature map or output filter of the data. In can learn temporal and context feature from text, and capture long-term
+this way a feature is detected from the input training data. This process dependencies between text entities and important features, which are
+can be visualized in Fig. 1 . detected using the ability of CNN in handling spatial relations ( Zhang
+The size of the filter is specified as kernel size and the number of et al., 2018; Zhou et al., 2015 ).
+filters specifies the number of feature maps to be used. In this way CNN Despite their advantages, deep learning models have certain prac-
+can be utilized to learn local features that are directly derived from the tical limitations, such as the difficulty in finding the optimal hyper-
+training data. parameters for each problem and dataset, the requirement for big train-
+ing datasets, and the lack of inter
+=== PAGE 6 ===
+J.A. Nasir, O.S. Khan and I. Varlamis International Journal of Information Management Data Insights 1 (2021) 100007
+Fig. 3. The proposed hybrid model.
+Table 1
+Datasets that can be used for fake news and rumors detection as well as for fact checking.
+Work Source URL Detection
+Vlachos and Riedel (2014) PolitiFact Channel4 https://sites.google.com/site/andreasvlachos/resources Fake news 2 classes
+Mitra and Gilbert (2015) CREDBANK https://github.com/compsocial/CREDBANK-data Credibility 5 levels
+Derczynski et al. (2015) PHEME project https://www.pheme.eu/software-downloads/ Veracity
+Mihaylova et al. (2019) SemEval-19 T.8 https://competitions.codalab.org/competitions/20022 Fact Checking Q&A classes Rumours
+Shu et al. (2018) FakeNewsNet https://github.com/KaiDMML/FakeNewsNet Fake News
+Salem et al. (2019) FA-KES https://zenodo.org/record/2607278#.X3oK8WgzaUk Fake News
+Ferreira and Vlachos (2016) Emergent https://github.com/willferreira/mscproject Rumours
+Thorne et al. (2018) FEVER http://fever.ai/ Fact Verification
+Derczynski et al. (2017) RumourEval http://alt.qcri.org/semeval2017/task8/index.php?id = data-and-tools Rumours
+Gorrell et al. (2019) RumourEval-2019 https://competitions.codalab.org/competitions/20022 Rumours Stance labels
+Table 2
+Techniques and datasets that have been used for fake news detection and fact checking.
+Work Source URL Detection Model
+Wang (2017) PolitiFact LIAR https://www.cs.ucsb.edu/~william/data/liar_dataset.zip Fake news 6 levels majority LR, SVM,
+bi-LSTM, CNN
+Ma et al. (2016) Snopes http://alt.qcri.org/~wgao/data/rumdect.zip Rumors 2 levels RF, DT SVM, RNN
+Ruchansky et al. (2017) (Twitter,Weibo) LSTM
+Popat et al. (2018) Snopes PolitiFact https://www.mpi-inf.mpg.de/dl-cred-analysis/ Credibility 2 or 5 bi-L STM, L STM,
+NewsTrust levels CNN
+SemEval-17 T.8
+Buntain & Gollbeck CREDBANK PHEME – Credibility RF
+(2017)
+Yang et al. (2018) Kaggle & News https://drive.google.com/open?id = 0B3e3qZpPtccsMFo5bk9Ib3VCc2c Fake news 2 TI-CNN,LSTM,RNN
+https://www.kaggle.com/mrisdal/fake-news classes
+Karimi and BuzzFeed Politifact https://www.kaggle.com/mrisdal/fake-news/data Fake news 2 N-grams, LIWC,
+Tang (2019) Kaggle https://www.kaggle.com/jruvika/fake-news-detection classes RST, BiGRNN-CNN
+LSTM, HDSF
+Ahmed et al. (2018) Politifact https://www.uvic.ca/engineering/ece/isot/datasets/fake- Fake news & SVM, SDG, LR,
+TripAdvisor ISOT news/index.php reviews kNN, DT
+Zhou et al. (2020) FakeNewsNet – Fake news SVM, RF XGB, LR,
+Politifact BuzzFeed Clickbaits NB
+Disinform.
+Elhadad et al. (2019) ISOT FA-KES LIAR – Fake news DT, kNN, LR, SVM,
+NB, LSVM,NN
+Twitter http://alt.qcri.org/semeval2016/task6/ Stance -
+Pamungkas et al. (2019)
+Ferreira and Snopes Hoaxalizer https://github.com/willferreira/mscproject Stance LR
+Vlachos (2016) (Twitter)
+4.1. Datasets Table 3
+The breakdown of the ISOT dataset.
+The evaluation experiments are performed on two publicly available
+News Total number of articles Type Number of articles
+datasets, which contain news articles i
+=== PAGE 7 ===
+J.A. Nasir, O.S. Khan and I. Varlamis International Journal of Information Management Data Insights 1 (2021) 100007
+4.2. Implementation decisions
+The hybrid deep learning model is implemented on Google colab 8 .
+Colab is a Jupyter 9 notebook cloud environment that provides GPUs
+and TPUs for heavy computation. The code for the experiments (pre-
+processing and ML classifiers) is written in Python.
+More specifically, the Keras Python 10 package is used for implement-
+ing the hybrid CNN-RNN model. Pandas and Numpy packages are used
+for reading the datasets and processing arrays respectively. NLTK pack-
+age is used for data pre-processing. Scikit-learn 11 package is used for
+processing the data, results evaluation and baseline classifiers imple-
+mentation. Matplotlib package is used for plotting graphs.
+4.2.1. Dataset splitting and pre-processing
+The datasets are read as Pandas DataFrame objects and the class
+labels are encoded using scikit-learn’s LabelEncoder. Next, each dataset
+is spilt into training and test subsets (80–20% split).
+For the validation of the classification models, all datasets have been
+pre-processed, in order to convert the raw texts in the appropriate for-
+mat for each models. A python script is written especially for this task.
+Texts are first cleared from IP and URL addresses, using the re python
+package for regular expressions. Then the test is split into sentences
+and terms English stopwords are removed and the remaining terms are
+stemmed using the NLTK package.
+4.2.2. Mapping text to vectors using word embeddings
+The label matrices for training and test sets are encoded and the text
+is vectorized by tokenization using the Tokenizer function of the Keras
+Fig. 4. FA-KES Model Summary.
+library. The task is repeated separately for training and test texts in the
+two datasets. The tokenizer is fitted on the pre-processed training corpus
+which is converted to sequences of integers. The length of sequences is • The pooled feature maps are fed into the RNN (LSTM) layer that
+set to 300 and a post-padding is applied in order to use it for model follows. This input is used to train the LSTM, which outputs the long-
+training. This is done because the length of each sequence varies. By term dependent features of the input feature maps, while retaining a
+fixing the length of each text sequence to 300, it is necessary to append memory. The dimension of the output is set to 32. The default linear
+zeros (zero values) in each sequence that is shorter than the fixed length. activation function (i.e. 𝑓( 𝑥 ) = 𝑥 ) of Keras is used in this layer.
+In order for the CNN to perform local feature extraction, pre-trained • Finally, the trained feature vectors are classified using a Dense layer
+word embeddings are used. An embedding matrix is prepared using the that shrinks the output space dimension to 1, which corresponds to
+GloVe pre-trained word embeddings. 12 GloVe was trained with a dataset the classification label (i.e. fake or not fake). This lay
+=== PAGE 8 ===
+J.A. Nasir, O.S. Khan and I. Varlamis International Journal of Information Management Data Insights 1 (2021) 100007
+Table 5
+Results of all models on the FA-KES dataset.
+Dataset Accuracy Precision Recall F 1 score
+LR 0.49 ± 0.008 0.50 0.49 0.49
+RF 0.53 ± 0.009 0.56 0.53 0.54
+MNB 0.38 ± 0.008 0.39 0.38 0.32
+SGD 0.47 ± 0.009 0.49 0.47 0.48
+KNNs 0.57 ± 0.008 0.58 0.57 0.57
+DT 0.55 ± 0.006 0.56 0.55 0.55
+AB 0.47 ± 0.005 0.49 0.47 0.47
+( Elhadad et al., 2019 ) 0.58 0.63 0.58 0.50
+CNN only 0.50 ± 0.006 0.55 0.50 0.48
+RNN only 0.50 ± 0.007 0.51 0.50 0.50
+Hybrid CNN-RNN 0.60 ± 0.007 0.59 0.60 0.59
+Table 6
+Results of all models on the ISOT dataset.
+Dataset Accuracy Precision Recall F 1 score
+LR 0.52 ± 0.03 0.50 0.52 0.42
+RF 0.92 ± 0.04 0.92 0.92 0.92
+MNB 0.60 ± 0.02 0.60 0.60 0.60
+SGD 0.52 ± 0.03 0.52 0.52 0.52
+KNNs 0.60 ± 0.01 0.67 0.61 0.56
+DT 0.96 ± 0.02 0.96 0.96 0.96
+AB 0.92 ± 0.02 0.91 0.91 0.91
+( Elhadad et al., 2019 ) 1.00 – – –
+CNN only 0.99 ± 0.02 0.99 0.99 0.99
+RNN only 0.98 ± 0.02 0.98 0.98 0.98
+Hybrid CNN-RNN 0.99 ± 0.02 0.99 0.99 0.99
+Fig. 5. ISOT Model Summary.
+Table 4 • Recall, which captures the ability of the classifier to find all the pos-
+Classification models used for comparison. itive samples.
+• Precision, which is the ability of the classifier not to label a negative
+Sr. No. Classifier Shortname
+sample positive.
+1
+2
+L
+R
+o
+a
+g
+n
+i
+d
+s
+o
+ti
+m
+c R
+F
+e
+o
+g
+r
+r
+e
+e
+s
+s
+t
+s ion L
+R
+R
+F
+• T
+co
+h
+m
+e
+p
+𝐹
+u
+1
+t e
+s
+s
+c o
+v
+r
+a
+e
+l
+,
+u
+w
+es
+h
+i
+i
+n
+c h
+t h
+i
+e
+s
+r
+th
+an
+e
+g
+h
+e
+a
+[
+r
+0
+m
+,1
+o
+]
+n
+.
+i c mean of precision and recall,
+3 Multinomial Na ĩ ve Bayes MNB
+4 Stochastic Gradient Decent SGD The following equations compute the metrics:
+5 K Nearest Neighbors KNNs
+6 Decision Tree DT 𝑎𝑐 𝑐 𝑢𝑟𝑎𝑐 𝑦 = 𝑇 𝑃 + 𝑇 𝑁 (1)
+7 Ada Boost AB 𝑇 𝑃 + 𝐹 𝑃 + 𝑇 𝑁 + 𝐹 𝑁
+8 Convolutional Neural Networks CNN only
+9 Recurrent Neural Networks RNN only 𝑝𝑟𝑒𝑐𝑖𝑠𝑖𝑜𝑛 =
+𝑇 𝑃
+(2)
+𝑇 𝑃 + 𝐹 𝑃
+𝑇 𝑃
+𝑟𝑒𝑐𝑎𝑙𝑙 = (3)
+and 𝑛 𝑜 is the number of the LSTM output units ( 𝑛 𝑜 = 32) ( Sak et al., 2014 ). 𝑇 𝑃 + 𝐹 𝑁
+The final dense layer connects the output of the LSTM with the output
+2 ∗ ( 𝑝𝑟𝑒𝑐𝑖𝑠𝑖𝑜𝑛 ×𝑟𝑒𝑐𝑎𝑙𝑙
+of the network (O = 1), so the number of parameters is 32x1. 𝐹
+1
+score =
+𝑝𝑟𝑒𝑐𝑖𝑠𝑖𝑜𝑛 + 𝑟𝑒𝑐𝑎𝑙𝑙
+(4)
+4.2.5. Comparison models A paired t-test was used to validate the statistical significance of the
+In order to comparatively evaluate the performance of the proposed results; the experiments were repeated five times (using 5-fold cross val-
+model against other supervised classification methods, seven classifiers idation, i.e. 80%-20% split); and accuracy was reported at 95% confi-
+are tested (see Table 4 ), on both datasets using the same training-test dence intervals.
+split in all cases. The implementations of the Scikit-learn python library,
+with the default configuration has been used for all the comparison 5.2. Results on the FA-KES dataset
+models. Results also comprise the performance of the proposed Neu-
+ral Network approach when only the CNN or only the RNN layers are The results of all methods 
+=== PAGE 9 ===
+J.A. Nasir, O.S. Khan and I. Varlamis International Journal of Information Management Data Insights 1 (2021) 100007
+Fig. 6. Generalization training and validation
+accuracy and loss graphs.
+Fig. 7. FA-KES training and validation accu-
+racy and loss graphs.
+Although Elhadad et al. (2019) reported a 1.00 accuracy on the ISOT Table 7
+dataset with their Decision Tree classifier, the accuracy of their methods Generalization results.
+ranges between 0.85 and 1.00. It also seems that they used only part of
+Accuracy Precision Recall F1
+the ISOT dataset, since they reported that only 25.2 thousand articles
+0.50 0.48 0.48 0.46
+were used. Taking into account the statistical significance of the results
+(0.99 ± 0.02), the proposed method performs comparatively better than
+the state-of-the-art method of Elhadad et al. (2019) .
+Overall, none of the supervised classification methods performs bet- on the FA-KES dataset. The final performance after 10 epochs of training
+ter than the proposed hybrid CNN-RNN model. Among these methods, and test on the whole FA-KES dataset are shown in Table 7 .
+Random Forests performed better in terms of accuracy for both datasets. The validation loss plot suggests an over-fitting of the model, since
+For FA-KES, KNNs had the best accuracy performance and for ISOT, it the loss fluctuates greatly with an increasing trend. The cross dataset
+was Decision Trees. validation results show poor generalisation, since despite the very large
+corpus used for training, and the near 1.0 accuracy of the model on
+training, it performs poorly on another fake news dataset using the ex-
+6. Analysis of the results act same structure. Probably adding an internal drop-out layer could
+improve the ability of the model to generalise, and this will be further
+Despite the many researches in the fake news detection domain, pre- examined in the next work in the field.
+sented in Section 2 , the issue of generalization of models still remains In order to get a better understanding on whether the models are
+unnoticed. In order to promote the work in this domain, more experi- over-fitted to the data, the learning curves of the proposed method on
+ments were performed with the hybrid CNN-RNN model trained on the the two datasets, the training and validation loss and accuracy curves
+ISOT dataset and tested on the FA-KES dataset using the exact same over the 10 epochs on each dataset are plotted. The PyPlot module of
+configuration as before. ISOT is chosen for training because it is much the Matplotlib library has been used for this task and the results are
+larger and has minimum space for improvement since many models depicted in Figs. 7 and 8 .
+perform above the 0.9 classification accuracy threshold. Fig. 6 shows For the ISOT dataset, the proposed model performed very well. The
+the ability of the ISOT trained model to generalize on another dataset training and testing accuracy increases with the epochs and similarly,
+and plots the training and validation accuracy and lo
+=== PAGE 10 ===
+J.A. Nasir, O.S. Khan and I. Varlamis International Journal of Information Management Data Insights 1 (2021) 100007
+Fig. 8. ISOT training and validation accuracy
+and loss graphs.
+Fig. 9. FA-KES ROC curves. a) LR, b) RF, c)
+MNB, d) SGD, e) KNN, f) DT, g) AB.
+10
+=== PAGE 11 ===
+J.A. Nasir, O.S. Khan and I. Varlamis International Journal of Information Management Data Insights 1 (2021) 100007
+Fig. 10. ISOT ROC curves. a) LR, b) RF, c)
+MNB, d) SGD, e) KNN, f) DT, g) AB.
+For completeness, the Receiver Operating Characteristic (ROC) 7. Discussion
+curves for all the methods on the two datasets are plotted. The ROC
+curve is used to diagnose a binary classifier and is created by plotting 7.1. Contribution to theory
+the True Positive Rate (TPR) against the False Positive Rate (FPR). The
+ROC curves of the FA-KES dataset are depicted in Fig. 9 and the respec- An important feature for predictive models that increases their ap-
+tive curves for ISOT are shown in Fig. 10 . plicability in multiple tasks, is their ability to generalise across datasets
+The ROC curves of the AdaBoost (AB) and Random Forest (RF) algo- and tasks. Model generalization refers to the ability of a pre-trained model
+rithms are the most stable and the most accurate with a steady curve for to handle unseen data and is mostly relevant to the model complexity
+ISOT. On the other hand, AB is the most unsteady curve for the FA-KES and training. The majority of studies surveyed in Section 2 train deep
+dataset. The models perform generally better on the ISOT dataset than neural networks on a dataset and evaluate their performance usually on
+on the FA-KES dataset. a different subset of the same dataset. To the best of our knowledge,
+11
+=== PAGE 12 ===
+J.A. Nasir, O.S. Khan and I. Varlamis International Journal of Information Management Data Insights 1 (2021) 100007
+there does not exist any study in the related literature of fake news de- Derczynski, L., Bontcheva, K., Liakata, M., Procter, R., Hoi, G. W. S., & Zubiaga, A. (2017).
+tection that examines the ability of the models to generalize, and the Semeval-2017 task 8: Rumoureval: Determining rumour veracity and support for ru-
+mours. arXiv:1704.05972 .
+current work is the first that contributes in this direction.
+Derczynski, L. , Bontcheva, K. , Lukasik, M. , Declerck, T. , Scharl, A. , Georgiev, G. , . . . Stew-
+art, R. , et al. (2015). Pheme: Computing veracity-the fourth challenge of big social
+7.2. Implication to practice data. In Proceedings of the extended semantic web conference eu project networking ses-
+sion (ESCW-PN) (p. n/a) .
+Dhillon, A. , & Verma, G. K. (2020). Convolutional neural network: A review of models,
+A practical implication of training a model without examining its methodologies and applications to object detection. Progress in Artificial Intelligence,
+generalisation ability is over-fitting . The most obvious consequence of 9 (2), 85–112 .
+Drumond, T. F. , Viéville, T. , & Alexandre, F. (2019). Bio-inspired analysis of deep learning
+over-fitting is the poor model performance on a new, unseen dataset. In
+on not-so-big data using data-prototypes. Frontiers in Computational Neuroscience, 12 ,
+addition, over-fitted models expose high-complexity, and examine a lot 100 .
+more information than it is probably needed in order to reach a decision. Elhadad, M. K. , Li, K. F. , & Gebali, F. (2019). A novel approach for selecting hybrid features
+from online news textual metadata for fake news detection. In International conference
+Finally, over-fitted models cannot be ported to a similar task on another
+on p2p, parallel, grid, cloud and internet computing (pp. 914–925). Springer .
+dataset and require re-training from scratch, thus reducing reusability. Ferreira, W. , & Vlachos, A. (2016). Emergent: a novel data-set for stance classification. In
+Another practical implication of deep neural networks relates to Proceedings of the 2016 conference of the north american chapter of the association for
+computational linguistics: Human language technologies (pp. 1163–1168) .
+their specialisation in certain tasks, which reduces their ability to per-
+Gorrell, G. , Kochkina, E. , Liakata, M. , Aker, A. , Zubiaga, A. , Bontcheva, K. , & Derczyn-
+form well in different tasks. The restriction of neural networks to solve ski, L. (2019). Semeval-2019 task 7: Rumoureval, determining rumour veracity and
+on problem at a time, becomes the advantage of the proposed hybrid support for rumours. In Proceedings of the 13th international workshop on semantic eval-
+method, which combines a CNN network that learns the spatial, thus
+uation (pp. 845–854) .
+Granger, E. , Kiran, M. , Blais-Morin, L.-A. , et al. (2017). A comparison of CNN-based face
+conceptual, fe
+=== PAGE 13 ===
+J.A. Nasir, O.S. Khan and I. Varlamis International Journal of Information Management Data Insights 1 (2021) 100007
+swarm optimization for scene classification in unmanned aerial vehicles. IEEE Access, Wang, W. Y. (2017). ”liar, liar pants on fire ”: A new benchmark dataset for fake news
+8 , 135383–135393 . detection. arXiv:1705.00648 .
+Rashkin, H. , Choi, E. , Jang, J. Y. , Volkova, S. , & Choi, Y. (2017). Truth of varying shades: Wang, Y. , McKee, M. , Torbica, A. , & Stuckler, D. (2019). Systematic literature review on
+Analyzing language in fake news and political fact-checking. In Proceedings of the 2017 the spread of health-related misinformation on social media. Social Science & Medicine,
+conference on empirical methods in natural language processing (pp. 2931–2937) . 240 , 112552 .
+Ratkiewicz, J. , Conover, M. , Meiss, M. , Gonçalves, B. , Patil, S. , Flammini, A. , & Wu, L. , Morstatter, F. , Carley, K. M. , & Liu, H. (2019). Misinformation in social media:
+Menczer, F. (2011). Truthy: Mapping the spread of astroturf in microblog streams. Definition, manipulation, and detection. ACM SIGKDD Explorations Newsletter, 21 (2),
+In Proceedings of the 20th international conference companion on world wide web 80–90 .
+(pp. 249–252) . Yadav, A. , & Vishwakarma, D. K. (2020). A comparative study on bio-inspired algorithms
+Ruchansky, N. , Seo, S. , & Liu, Y. (2017). Csi: A hybrid deep model for fake news detection. for sentiment analysis. Cluster Computing , 1–21 .
+In Proceedings of the 2017 ACM on conference on information and knowledge management Yang, Y., Zheng, L., Zhang, J., Cui, Q., Li, Z., & Yu, P. S. (2018). Ti-CNN: Convolutional
+(pp. 797–806) . neural networks for fake news detection. arXiv:1806.00749 .
+Sahoo, S. R. , Gupta, B. , Choi, C. , & Esposito, C. (2020). Detection of spammer account Zeng, L. , Starbird, K. , & Spiro, E. S. (2016). #unconfirmed: Classifying rumor stance in
+through rumor analysis in online social networks. In The 9th international conference crisis-related social media messages. In Tenth international AAAI conference on web and
+on smart media and applications (p. n/a) . social media (pp. 747–750) .
+Sak, H., Senior, A., & Beaufays, F. (2014). Long short-term memory based recurrent neural Zhang, X. , Chen, F. , & Huang, R. (2018). A combination of rnn and cnn for attention-based
+network architectures for large vocabulary speech recognition. arXiv:1402.1128 . relation classification. Procedia Computer Science, 131 , 911–917 .
+Salem, F. K. A. , Al Feel, R. , Elbassuoni, S. , Jaber, M. , & Farah, M. (2019). Fa-kes: A fake Zhou, C., Sun, C., Liu, Z., & Lau, F. (2015). A c-lstm neural network for text classification.
+news dataset around the syrian war. In Proceedings of the international aaai conference arXiv:1511.08630 .
+on web and social media: 13 (pp. 573–582) . Zhou, X. , Jain, A. , Phoha, V. V. , & Zafarani, R. (2020). Fake news early detection: A
+Shang, J. , Shen, J. , Sun, T. , Liu, X. , Gruenheid, A. , Korn, F. , . . .
