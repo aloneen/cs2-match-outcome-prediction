@@ -621,9 +621,10 @@ story.append(P("2. Related Work", H1))
 story.append(P("Sport outcome prediction has attracted ML researchers for decades, "
                "partly because the problem is clean — binary or multi-class outcome, "
                "reasonably structured historical data — and partly because the ceiling "
-               "is well-known to be far from 100%. Dixon and Coles (1997) modelled "
-               "football scores as a modified Poisson process and showed mathematically "
-               "that stochastic variation limits how far any model can go. "
+               "is well-known to be far from 100%. "
+               "Broms and Nordansjö (2024) applied Logistic Regression and Random Forest "
+               "to CS:GO match data from HLTV.org over a three-year period, benchmarking "
+               "predictions against bookmaker odds — the closest prior study to our own. "
                "Bunker and Thabtah (2019) reviewed approaches across sports and found "
                "that tree-based ensembles tend to outperform linear models, but also "
                "that feature construction often matters more than algorithm choice. "
@@ -648,7 +649,7 @@ story.append(P("Esports prediction is a younger area but has grown quickly. "
 cw1 = [COL*0.38, COL*0.18, COL*0.24, COL*0.20]
 story.append(make_table(
     ["Study","Domain","Method(s)","Accuracy"],
-    [["Dixon &amp; Coles (1997)","Football","Poisson","~65%"],
+    [["Broms &amp; Nordansjö (2024)","CS:GO","LR, RF","&gt;50%"],
      ["Baboota &amp; Kaur (2019)","Football","RF, XGBoost","74%"],
      ["Bunker &amp; Thabtah (2019)","Multi-sport","RF, SVM, LR","68–72%"],
      ["Katona et al. (2019)","CS:GO","Random Forest","AUC 0.82"],
@@ -1040,7 +1041,7 @@ REFS = [
     "Baboota, R., &amp; Kaur, H. (2019). Predictive analysis and modelling football results using machine learning. <i>International Journal of Forecasting, 35</i>(2), 741–755.",
     "Breiman, L. (2001). Random forests. <i>Machine Learning, 45</i>(1), 5–32.",
     "Bunker, R. P., &amp; Thabtah, F. (2019). A machine learning framework for sport result prediction. <i>Applied Computing and Informatics, 15</i>(1), 27–33.",
-    "Dixon, M. J., &amp; Coles, S. G. (1997). Modelling association football scores and inefficiencies in the football betting market. <i>Applied Statistics, 46</i>(2), 265–280.",
+    "Broms, E., &amp; Nordansjö, W. (2024). Predicting Counter-Strike matches using machine learning models. Bachelor's Thesis, Department of Statistics, Lund University.",
     "Friedman, J. H. (2001). Greedy function approximation: A gradient boosting machine. <i>Annals of Statistics, 29</i>(5), 1189–1232.",
     "griffindesroches. (2025). <i>CS2 HLTV Professional Match Statistics Dataset.</i> Kaggle.",
     "Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <i>The elements of statistical learning</i> (2nd ed.). Springer.",

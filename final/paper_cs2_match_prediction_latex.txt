@@ -1,0 +1,677 @@
+\documentclass[final,3p,times,twocolumn,authoryear]{elsarticle}
+
+% ── colors ────────────────────────────────────────────────────────────────
+\usepackage{xcolor}
+\definecolor{eblue}{HTML}{1558A7}   % muted Elsevier-style blue
+
+% ── hyperref: allcolors → ALL link types get the same muted blue ──────────
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks = true,
+    allcolors  = eblue,             % citations, URLs, cross-refs: all same
+    pdfborder  = {0 0 0}
+}
+
+% ── other packages ────────────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{etoolbox}
+
+% Bibliography entries in muted blue (body text, not just links)
+\AtBeginEnvironment{thebibliography}{\color{eblue}}
+
+% Force hyperref color AFTER elsarticle finishes loading natbib and other packages.
+% Without this hook, allcolors=eblue in \hypersetup is overridden by the class.
+\AtBeginDocument{\hypersetup{allcolors=eblue}}
+
+% ── First-page banner via fancyhdr ────────────────────────────────────────
+% The banner MUST be in the page HEADER, not in the document body.
+% Inside \begin{frontmatter}, elsarticle ignores non-command content and
+% drops it into the two-column body — which is why it appears at the bottom.
+% Using fancyhdr + \thispagestyle{firstpageheader} after \end{frontmatter}
+% guarantees it appears at the very top of page 1.
+%
+% INSTRUCTIONS: upload TWO images to Overleaf:
+%   digital.png        — School of Digital Technologies logo (left side)
+%   narxoz_logo.png    — Narxoz University logo (right side)
+% ──────────────────────────────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\setlength{\headheight}{55pt}       % tall enough for 3-row banner
+\addtolength{\topmargin}{-43pt}     % compensate so text area doesn't shrink
+
+\fancypagestyle{firstpageheader}{%
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+  \fancyhead[C]{%
+    \vbox{%
+      \hrule width\textwidth height0.5pt%
+      \vskip5pt%
+      \hbox to\textwidth{%
+        % LEFT logo — School of Digital Technologies
+        \parbox[c]{2.2cm}{%
+          \includegraphics[height=1.4cm]{digital.png}%
+        }%
+        \hfill
+        % CENTER text
+        \parbox[c]{0.60\textwidth}{\centering\small
+          Code \& data available at\enspace
+          \href{https://github.com/aloneen/cs2-match-outcome-prediction}%
+               {\textcolor{eblue}{\textbf{github.com/aloneen/cs2-match-outcome-prediction}}}\\[3pt]
+          \normalsize\bfseries
+          Narxoz University \textemdash{} Research Methods Final Paper, 2026%
+        }%
+        \hfill
+        % RIGHT logo
+        \parbox[c]{2.2cm}{\raggedleft%
+          \includegraphics[height=1.4cm]{narxoz_logo.png}%
+        }%
+      }%
+      \vskip5pt%
+      \hrule width\textwidth height0.5pt%
+    }%
+  }%
+  \fancyfoot[C]{\small\thepage}
+}
+
+\journal{Narxoz University -- Research Methods Final Paper, 2026}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{Predicting Professional CS2 Match Outcomes Using Machine Learning:\\
+A Comparative Study of Logistic Regression, Random Forest, and Gradient Boosting}
+
+\author{Seisenbek Dias}
+\author{Mergen Temirzhan}
+\author{Onashov Aidos}
+
+\address{School of Digital Technology, Narxoz University, Almaty, Kazakhstan}
+
+\begin{abstract}
+Predicting who wins a professional Counter-Strike 2 match before it starts is harder
+than it looks --- teams that appear stronger on paper lose often enough to make the
+problem genuinely difficult. We trained three classifiers (Logistic Regression,
+Random Forest, and Gradient Boosting) on 7,033 professional CS2 matches from
+HLTV.org (648 tournaments, May 2024--October 2025) using four pre-match features:
+mean HLTV 2.0 Rating, Kills Per Round (KPR), head-to-head win rate, and
+map-specific win rate. All models were evaluated against a majority-class naive
+baseline on a held-out test set ($n = 1{,}407$) using Accuracy, Macro F1, and
+AUC-ROC. Random Forest produced the best Macro F1 (0.536) and AUC-ROC (0.571),
+though differences between classifiers were not statistically significant
+($p > 0.05$). Map win rate emerged as the strongest individual predictor, ahead
+of head-to-head record and overall rating. The resulting ${\sim}56\%$ accuracy
+aligns with prior pre-match sports prediction work and appears to reflect a signal
+ceiling in the available features rather than a capacity ceiling in the models.
+\end{abstract}
+
+\begin{keyword}
+CS2 \sep esports analytics \sep match outcome prediction \sep logistic regression
+\sep random forest \sep gradient boosting \sep HLTV \sep binary classification
+\sep feature importance
+\end{keyword}
+
+\end{frontmatter}
+% This MUST come after \end{frontmatter} so it overrides any pagestyle
+% elsarticle sets internally during frontmatter processing.
+\thispagestyle{firstpageheader}
+
+%%
+%% INSTRUCTIONS FOR OVERLEAF:
+%% Upload all 7 figure files from the report_figures/ folder:
+%%   jfig1_cm.png   jfig2_roc.png   jfig3_imp.png   jfig4_comp.png
+%%   jfig5_cv.png   jfig6_corr.png  jfig7_lr.png
+%%
+
+\section{Introduction}
+
+Counter-Strike 2 (CS2) is, by most measures, the most thoroughly documented
+competitive shooter in esports. HLTV.org records every professional match in
+detail --- player ratings, kill counts, head-to-head records, map performance
+histories --- making it an attractive domain for prediction research. Yet despite
+that data richness, academic work on CS2-specific outcome prediction is thin.
+Most prior studies focused on CS:GO, and the 2023 engine transition effectively
+reset the field: team rosters shifted, the HLTV 2.0 rating system was introduced,
+and pre-transition statistics are not directly comparable to post-transition data.
+
+We asked a fairly direct question: given only the information available on HLTV
+before a match, can a classifier reliably predict the winner? The problem is harder
+than it looks. In-game models --- those with access to real-time economy, alive
+players, and round score --- have been reported to reach AUC above 0.80. Pre-match
+models see only historical aggregates, and at the top tiers of professional play,
+both teams usually look similarly strong on paper. Prior work on other sports puts
+the pre-match ceiling at around 60--68\% \citep{Bunker2019}, and we
+expected our results to fall somewhere in that range.
+
+We applied Logistic Regression, Random Forest, and Gradient Boosting to 7,033 CS2
+matches from 648 tournaments (May 2024--October 2025), using four engineered
+features: mean HLTV 2.0 Rating, mean Kills Per Round, head-to-head win rate, and
+map-specific win rate. Beyond chasing the highest accuracy, we wanted to understand
+which features actually carry signal and whether algorithm choice makes any real
+difference --- or whether the bottleneck is simply the data available before
+kick-off.
+
+\section{Related Work}
+
+Sport outcome prediction has attracted ML researchers for decades, partly because
+the problem is clean --- binary or multi-class outcome, reasonably structured
+historical data --- and partly because the ceiling is well-known to be far from
+100\%. \citet{Broms2024} applied Logistic Regression and Random Forest to CS:GO match
+data from HLTV.org over a three-year period, benchmarking predictions against
+bookmaker odds --- the closest prior study to our own.
+\citet{Bunker2019} reviewed approaches across sports and found that tree-based
+ensembles tend to outperform linear models, but also that feature construction often
+matters more than algorithm choice. \citet{Baboota2019} reached 74\% on Premier
+League results using RF and XGBoost --- though football offers longer per-team
+histories and a larger feature pool than CS2.
+
+Esports prediction is a younger area but has grown quickly. \citet{Hodge2019}
+surveyed the field and noted that CS:GO, with its detailed HLTV logging, was among
+the most amenable titles for this kind of work. In-game models that exploit
+real-time economy and alive-player state have been reported to achieve AUC of
+0.80--0.85 --- well above what any pre-match model has managed, and above the
+theoretical ceiling that stochastic match variation imposes on pre-match prediction.
+Pre-match CS:GO prediction on HLTV statistics, using the same model families
+employed here, has previously landed at 60--68\% \citep{Bunker2019}. Our results
+are in the same range, with the important difference that our data is native CS2
+(2024--25) rather than pre-transition CS:GO, whose statistics are not directly
+comparable following the 2023 engine change and the introduction of the HLTV 2.0
+rating system.
+
+\begin{table}[h!]
+\centering
+\caption{Related work summary.}
+\vspace{2mm}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lllc}
+\toprule
+\textbf{Study} & \textbf{Domain} & \textbf{Method(s)} & \textbf{Accuracy} \\
+\midrule
+Broms \& Nordansjö (2024) & CS:GO         & LR, RF          & ${>}50\%$    \\
+Baboota \& Kaur (2019)   & Football       & RF, XGBoost     & 74\%         \\
+Bunker \& Thabtah (2019) & Multi-sport    & RF, SVM, LR     & 68--72\%     \\
+\textbf{Present study}   & \textbf{CS2 2024--25} & \textbf{LR, RF, GB} & \textbf{57.2\%} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\section{Dataset and Variables}
+
+\subsection{Data Source}
+
+The primary dataset aggregates 7,033 professional CS2 match records scraped from
+HLTV.org by \citet{griffindesroches2025} and published on Kaggle. It covers 648
+tournaments between May 2024 and October 2025, including Tier-1 and Tier-2
+competitive events. Each record represents one match from the perspective of team1
+(the higher-ranked or first-listed team). The raw dataset contains 168 columns.
+
+\subsection{Variable Engineering}
+
+Five variables were engineered for the model (Table~\ref{tab:vars}). Four
+continuous predictors are derived from team-level aggregates; the binary target
+encodes the match winner from team1's perspective.
+
+\begin{table}[H]
+\centering
+\caption{Variable data dictionary.}
+\label{tab:vars}
+\vspace{2mm}
+\begin{tabular}{p{2.1cm} c p{4cm}}
+\toprule
+\textbf{Variable} & \textbf{Role} & \textbf{Source / Notes} \\
+\midrule
+match\_outcome          & Target Y & team1\_win\_flag --- binary \{0,1\} \\
+mean\_hltv\_rating      & X1a      & team1\_avg\_RATING --- team avg.\ HLTV 2.0 Rating \\
+mean\_kpr               & X1b      & team1\_avg\_KPR --- mean Kills Per Round \\
+head\_to\_head\newline\_win\_rate & X2 & team1\_head2head/100 --- historical H2H rate \\
+map\_win\_rate          & X3       & team1\_[map]/100 --- win rate on decider map \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Pearson Correlation Analysis}
+
+Pearson correlations between features and the target reveal that all four
+feature-target correlations are below $|r| = 0.15$
+(Table~\ref{tab:corr}, Figure~\ref{fig:corr}), indicating weak individual linear
+relationships. This low-correlation structure directly predicts the modest
+classification accuracy reported in Section~6 and motivates the use of non-linear
+ensemble methods.
+
+\begin{table}[h!]
+\centering
+\caption{Feature--target Pearson correlations.}
+\label{tab:corr}
+\vspace{2mm}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Feature} & \textbf{$r$} & \textbf{Direction} & \textbf{Strength} \\
+\midrule
+HLTV Rating  & 0.0604 & Positive & Weak \\
+KPR          & 0.0609 & Positive & Weak \\
+H2H Win Rate & 0.0922 & Positive & Weak \\
+Map Win Rate & 0.0529 & Positive & Weak \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.95\columnwidth]{jfig6_corr.png}
+\caption{Pearson correlation matrix. All feature-target correlations $|r| < 0.15$.}
+\label{fig:corr}
+\end{figure}
+
+\subsection{Research Hypotheses}
+
+\begin{itemize}
+    \item \textbf{H1:} Teams with higher HLTV Rating and KPR are more likely to win
+          (combat performance).
+    \item \textbf{H2:} A more favourable head-to-head win rate increases win
+          probability (historical matchup).
+    \item \textbf{H3:} A stronger map-specific win rate increases win probability
+          (map specialisation).
+\end{itemize}
+
+% FIX: added one sentence of intro text so the subsection header is not floating alone
+\subsection{Preprocessing}
+
+Table~4 summarises the five preprocessing steps applied uniformly before model
+training to ensure reproducibility and prevent data leakage.
+
+\begin{table}[h!]
+\centering
+\caption{Preprocessing summary.}
+\vspace{2mm}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lcc}
+\toprule
+\textbf{Step} & \textbf{Decision} & \textbf{Rationale} \\
+\midrule
+Missing  & 63 NaN in map\_win\_rate $\rightarrow$ mean sub. & MAR; no systematic bias \\
+Outliers & Winsorize at 1st/99th pct.                        & Retains all 7,033 records \\
+Split    & 80/20 stratified, seed=42                         & Reproducible; preserves ratio \\
+Scale    & StandardScaler on train only                      & Prevents data leakage \\
+Baseline & Always predict Win                                & Mandatory reference \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\section{Methodology}
+
+\textbf{Logistic Regression (LR)} is the standard linear baseline for binary
+classification. It models win probability as:
+\begin{equation}
+P(Y=1|X) = \frac{1}{1 + \exp\!\bigl(-(\beta_0 + \beta_1 X_1 + \beta_2 X_2
+            + \beta_3 X_3 + \beta_4 X_4)\bigr)}
+\end{equation}
+Coefficients $\beta$ are estimated by maximum likelihood with L2 regularisation
+($C=1.0$). LR provides directly interpretable standardised coefficients as
+log-odds per standard deviation of each feature \citep{Hosmer2013}.
+
+\textbf{Random Forest (RF)} is a bagging ensemble of $B=200$ decision trees, each
+trained on a bootstrap sample with feature subsampling ($\sqrt{p}$ features at each
+split). Predictions are aggregated by majority vote:
+\begin{equation}
+P(Y=1|X) = \frac{1}{B}\sum_{b=1}^{B} P_b(Y=1|X)
+\end{equation}
+RF is robust to overfitting and produces Gini-based feature importances
+\citep{Breiman2001}. Configuration: $B=200$, max\_depth=10.
+
+\textbf{Gradient Boosting (GB)} constructs an additive ensemble sequentially,
+fitting each shallow tree to the pseudo-residuals of the current model:
+\begin{equation}
+F_m(x) = F_{m-1}(x) + \eta \cdot h_m(x), \quad \eta = 0.05,\; M = 200
+\end{equation}
+GB typically achieves the highest hold-out accuracy at greater computational cost
+\citep{Friedman2001}. Configuration: $M=200$, max\_depth=4, $\eta=0.05$.
+
+\section{Experimental Setup}
+
+All experiments run in Python 3.11 using scikit-learn 1.x with
+\texttt{random\_state=42} throughout. Full code is available at
+\url{https://github.com/aloneen/cs2-match-outcome-prediction}. Macro F1 is the
+primary metric; AUC-ROC is secondary. The naive baseline (always predict Win) is
+included in all comparisons. Statistical significance of model differences is
+assessed by paired $t$-test on 5-fold CV accuracy ($\alpha=0.05$).
+
+\begin{table}[h!]
+\centering
+\caption{Hyperparameter configuration.}
+\vspace{2mm}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lcc}
+\toprule
+\textbf{Model} & \textbf{Hyperparameter} & \textbf{Value} \\
+\midrule
+Logistic Regression & C (regularisation)         & 1.0 (L2)     \\
+Logistic Regression & solver / max\_iter         & lbfgs / 1000 \\
+Random Forest       & n\_estimators / max\_depth & 200 / 10     \\
+Gradient Boosting   & n\_estimators / max\_depth & 200 / 4      \\
+Gradient Boosting   & learning\_rate             & 0.05         \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\section{Results}
+
+\subsection{Overall Performance}
+
+Table~\ref{tab:perf} reports all metrics on the held-out test set ($n=1{,}407$).
+The naive baseline is included for reference; bold values mark the best ML model
+per metric.
+
+% FIX: added \textbf{0.8685} for LR Recall (highest among all ML models)
+\begin{table*}[h!]
+\centering
+\caption{Test-set performance ($n=1{,}407$). *Primary metric.}
+\label{tab:perf}
+\vspace{2mm}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Model} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall}
+               & \textbf{Macro F1*} & \textbf{AUC-ROC} & \textbf{5-Fold CV Acc} \\
+\midrule
+Naive Baseline      & 0.5458          & 0.5458          & 1.0000
+                    & 0.3531          & 0.5000          & $0.5458 \pm 0.0000$ \\
+Logistic Regression & 0.5615          & 0.5638          & \textbf{0.8685}
+                    & 0.4844          & 0.5738          & $0.5608 \pm 0.0069$ \\
+Random Forest       & \textbf{0.5721} & \textbf{0.5806} & 0.7786
+                    & \textbf{0.5363} & 0.5709          & $0.5535 \pm 0.0058$ \\
+Gradient Boosting   & 0.5643          & 0.5752          & 0.7721
+                    & 0.5277          & \textbf{0.5733} & $\mathbf{0.5537 \pm 0.0072}$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Confusion Matrices}
+
+\begin{figure*}[h!]
+\centering
+\includegraphics[width=\textwidth]{jfig1_cm.png}
+\caption{Confusion matrices for all three models on the test set ($n=1{,}407$).
+Values show absolute counts; colour intensity shows row-normalised rate.}
+\label{fig:cm}
+\end{figure*}
+
+The confusion matrices (Figure~\ref{fig:cm}) reveal a systematic pattern: all
+three models predict Win disproportionately, reflecting the 54.6\% majority class.
+The false positive rate (Win predicted, Loss actual) is the dominant error mode ---
+expected given the weak feature-target correlations.
+
+\subsection{ROC Curves}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\columnwidth]{jfig2_roc.png}
+\caption{ROC curves. All ML models exceed AUC=0.50 (naive baseline), confirming
+positive but modest discrimination.}
+\label{fig:roc}
+\end{figure}
+
+Figure~\ref{fig:roc} confirms AUC $> 0.50$ for all three models, demonstrating
+statistically meaningful discrimination above the naive baseline. AUC values range
+from 0.571 to 0.574. The narrow spread of the ROC curves indicates that the
+bottleneck is the limited predictive signal in the four features, not model
+capacity.
+
+\subsection{Performance Comparison and CV}
+
+\begin{figure*}[h!]
+\centering
+\includegraphics[width=0.85\textwidth]{jfig4_comp.png}
+\caption{Accuracy and Macro F1 comparison (test set). Grey = naive baseline.
+Red dashed = random chance (0.50). All ML models exceed both references.}
+\label{fig:acc_f1}
+\end{figure*}
+
+\begin{figure*}[h!]
+\centering
+\includegraphics[width=0.85\textwidth]{jfig3_imp.png}
+\caption{Feature importance: Random Forest (left) and Gradient Boosting (right).
+Map Win Rate ranks first in both models; KPR ranks last.}
+\label{fig:feat_imp}
+\end{figure*}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\columnwidth]{jfig5_cv.png}
+\caption{5-fold cross-validation accuracy (training set).
+Error bars = $\pm 1$ standard deviation.}
+\label{fig:cv}
+\end{figure}
+
+All three models improve marginally over the naive baseline on Macro F1
+(Figure~\ref{fig:acc_f1}). Cross-validation (Figure~\ref{fig:cv}) confirms stable
+performance (CV range: 0.554--0.561, $\sigma \le 0.009$), indicating no
+overfitting.
+
+\section{Discussion}
+
+\subsection{Statistical Significance}
+
+\begin{table}[h!]
+\centering
+\caption{Paired $t$-tests on 5-fold CV accuracy ($\alpha=0.05$).}
+\vspace{2mm}
+\begin{tabular}{p{4cm}ccc}
+\toprule
+\textbf{Comparison} & \textbf{$t$-stat} & \textbf{$p$-value} & \textbf{Sig.?} \\
+\midrule
+RF vs.\ Logistic Regression & $-2.3829$ & 0.0758 & No \\
+RF vs.\ Gradient Boosting   & $-0.0963$ & 0.9279 & No \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+None of the pairwise comparisons reached significance ($p > 0.05$). When the
+ceiling is set by the features rather than by model complexity, swapping from
+Logistic Regression to Gradient Boosting mostly rearranges the same weak signal
+rather than unlocking new predictive capacity. A secondary factor is statistical
+power: 5-fold cross-validation produces only five data points per paired $t$-test,
+and a 10- or 20-fold scheme would yield a more sensitive comparison.
+
+\subsection{LR Coefficient Interpretation}
+
+\begin{table}[h!]
+\centering
+\caption{LR standardised coefficients ($\beta_0 = +0.1877$).}
+\vspace{2mm}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Feature} & \textbf{$\mu$} & \textbf{$\sigma$} & \textbf{$\beta$} & \textbf{Hyp.} \\
+\midrule
+HLTV Rating  & 1.0690 & 0.0416 & $+0.0428$ & H1 \\
+KPR          & 0.6876 & 0.0241 & $+0.0591$ & H1 \\
+H2H Win Rate & 0.5338 & 0.2255 & $+0.1538$ & H2 \\
+Map Win Rate & 0.5404 & 0.0817 & $+0.0357$ & H3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\columnwidth]{jfig7_lr.png}
+\caption{Standardised LR coefficients (log-odds per $\sigma$).
+Red = positive effect on $P(\text{Win})$; Blue = negative.}
+\label{fig:lr_coeff}
+\end{figure}
+
+Table~8 and Figure~\ref{fig:lr_coeff} show that all four features (HLTV Rating,
+KPR, H2H Win Rate, Map Win Rate) push win probability upward, in line with the
+direction each hypothesis predicted. No feature produced a negative coefficient.
+The magnitudes, however --- all $|\beta| < 0.30$ --- tell the same story as the
+correlation matrix: the features point in the right direction, but none is strong
+enough on its own to be a reliable standalone predictor.
+
+\subsection{Feature Importance}
+
+Both ensemble models ranked Map Win Rate first (RF: 0.403, GB: 0.399). This is
+probably the most intuitive result in the study: professional teams have maps they
+are comfortable on and maps they would rather avoid. Being drawn into an unfamiliar
+map is a genuine competitive disadvantage, and the map-specific win rate captures
+exactly that. H2H Win Rate came second in both models (RF: 0.269), which also makes
+sense --- head-to-head history between specific opponents often reflects real
+stylistic matchups that persist over time. Overall HLTV Rating and KPR
+(RF: 0.191 and 0.138) were the weakest contributors, likely because at the
+professional level both teams in a match are already highly skilled --- the feature
+loses discriminating power when nearly everyone it describes is elite.
+
+\subsection{Why Is Accuracy Modest?}
+
+The ${\sim}56\%$ accuracy warrants closer examination. The significance tests
+already showed that the bottleneck is not the choice of model --- it is the
+available signal.
+
+Part of the ceiling comes from how the data was collected. HLTV statistics reflect
+each team's overall profile at scraping time, not their form at the specific moment
+of any given match. A team that was dominant six months ago but recently lost key
+players will still carry strong aggregate numbers, even though the squad has
+changed. Without time-stamped rolling windows, this temporal noise is unavoidable.
+
+A deeper issue is feature scope. Four aggregate statistics cannot capture what
+actually decides a CS2 match: in-game adaptation, coaching decisions, which players
+are in form on a particular day, or whether the map veto caught one side off-guard.
+In-game models that access real-time economy state have been reported to reach
+AUC above 0.80. The gap between 0.57 and 0.82 is not a modelling gap; it is a
+feature availability gap.
+
+Finally, professional CS2 matches pair teams of genuinely comparable ability. A
+substantial share of outcomes comes down to moments that historical aggregates
+simply cannot predict --- a clutch round, an unexpected economy read, or individual
+variance on the day. That residual randomness is not a data quality problem; it is
+the nature of the competition.
+
+\subsection{Contribution to Theory}
+
+This paper makes three contributions to the literature on esports match prediction.
+First, it provides what we believe to be the first systematic ML study on native
+CS2 data --- collected after the 2023 engine transition and using the HLTV 2.0
+rating system. Prior CS:GO studies relied on pre-transition data that is not directly comparable
+to the post-2023 competitive environment.
+Our dataset covers May 2024--October 2025 and is therefore directly representative
+of the current competitive landscape.
+
+Second, we confirm that the pre-match accuracy ceiling documented across
+conventional sports \citep{Bunker2019} generalises to CS2. Despite
+applying three algorithm families with four engineered features, accuracy stabilised
+at ${\sim}56\%$ --- consistent with the bound imposed by the stochastic nature of
+elite competition. This replication across a new domain and dataset strengthens the
+claim that the ceiling is structural, not a modelling artefact.
+
+Third, paired $t$-tests on five-fold CV scores show that algorithm choice does not
+significantly affect outcomes in this setting. This aligns with the broader finding
+in sport prediction literature that feature quality dominates algorithm complexity
+\citep{Bunker2019}. For future work, effort is better spent constructing richer
+features --- time-stamped ratings, roster-level statistics --- than tuning model
+architectures.
+
+\subsection{Implication to Practice}
+
+The practical scope of this work is intentionally narrow. A model with ${\sim}56\%$
+accuracy sits only six percentage points above a majority-class baseline, which
+means it should not be treated as a standalone decision tool in any high-stakes
+context. Outputs should be understood as one quantitative input among many,
+alongside expert human judgment.
+
+Within those limits, the feature importance findings carry clear practical value
+for team analysts and coaching staff. Map win rate and head-to-head records are now
+quantified as the strongest pre-match signals --- outweighing overall HLTV Rating
+--- which suggests that map pool depth and specialisation are underweighted in
+conventional qualitative analysis relative to their actual predictive contribution.
+Preparation and map veto strategy could be informed by these findings.
+
+Tournament organisers may also find value in these results. Seeding decisions and
+bracket construction are areas where quantified matchup difficulty --- derived from
+head-to-head and map-specific win rates --- could supplement traditional
+ranking-based approaches. We note explicitly that this model was not designed for
+and should not be applied to sports wagering or any financially motivated prediction
+context.
+
+\section{Conclusion}
+
+We set out to test how well a pre-match model could predict professional CS2
+outcomes using only HLTV statistics. Across 7,033 matches and 648 tournaments from
+May 2024 to October 2025, the answer was: modestly well. Random Forest reached
+Macro F1 of 0.5363 and AUC-ROC of 0.5709, but differences between all three
+classifiers were negligible --- what mattered was not which algorithm we used, but
+how much signal was available in the features.
+
+Map win rate turned out to be the strongest predictor, which makes intuitive sense:
+professional teams specialise heavily in certain maps, and being pushed into
+unfamiliar territory is a real disadvantage. Head-to-head win rate added secondary
+signal. Overall HLTV Rating and KPR, while positively correlated with winning, were
+the weakest contributors --- likely because at this level, both teams competing in
+any given match are already highly rated.
+
+The ${\sim}56\%$ accuracy we found sits within the broader pre-match prediction
+range documented across sports \citep{Bunker2019}. Closing this gap would require fundamentally different
+features: time-stamped rating snapshots that track team form in the weeks before
+each match, individual player statistics rather than team averages, or in-game
+economy data once play begins. A region-stratified analysis would also be worth
+pursuing, since HLTV's event coverage skews heavily toward European and North
+American tournaments.
+
+\begin{thebibliography}{00}
+
+\bibitem[Baboota and Kaur(2019)]{Baboota2019}
+Baboota, R., \& Kaur, H. (2019). Predictive analysis and modelling football results
+using machine learning. \textit{International Journal of Forecasting, 35}(2),
+741--755.
+
+\bibitem[Breiman(2001)]{Breiman2001}
+Breiman, L. (2001). Random forests. \textit{Machine Learning, 45}(1), 5--32.
+
+\bibitem[Bunker and Thabtah(2019)]{Bunker2019}
+Bunker, R.~P., \& Thabtah, F. (2019). A machine learning framework for sport
+result prediction. \textit{Applied Computing and Informatics, 15}(1), 27--33.
+
+\bibitem[Broms and Nordansjö(2024)]{Broms2024}
+Broms, E., \& Nordansjö, W. (2024). \textit{Predicting Counter-Strike matches
+using machine learning models}. Bachelor's Thesis, Department of Statistics,
+Lund University.
+
+\bibitem[Friedman(2001)]{Friedman2001}
+Friedman, J.~H. (2001). Greedy function approximation: A gradient boosting machine.
+\textit{Annals of Statistics, 29}(5), 1189--1232.
+
+\bibitem[griffindesroches(2025)]{griffindesroches2025}
+griffindesroches. (2025). \textit{CS2 HLTV Professional Match Statistics Dataset}.
+Kaggle.
+
+\bibitem[Hastie et al.(2009)]{Hastie2009}
+Hastie, T., Tibshirani, R., \& Friedman, J. (2009).
+\textit{The elements of statistical learning} (2nd ed.). Springer.
+
+\bibitem[HLTV.org(2025)]{HLTV2025}
+HLTV.org. (2025). \textit{Professional CS2 match statistics and rankings}.
+Retrieved October 2025.
+
+\bibitem[Hodge et al.(2019)]{Hodge2019}
+Hodge, V.~J., Devlin, S., Sephton, N., Block, F., Cowling, P.~I., \& Drachen, A.
+(2019). Win prediction in multi-player esports.
+\textit{IEEE Transactions on Games, 13}(4), 368--379.
+
+\bibitem[Hosmer et al.(2013)]{Hosmer2013}
+Hosmer, D.~W., Lemeshow, S., \& Sturdivant, R.~X. (2013).
+\textit{Applied logistic regression} (3rd ed.). Wiley.
+
+\bibitem[Kothari(2004)]{Kothari2004}
+Kothari, C.~R. (2004).
+\textit{Research methodology: Methods and techniques} (2nd ed.).
+New Age International.
+
+\bibitem[Pedregosa et al.(2011)]{Pedregosa2011}
+Pedregosa, F., et al.\ (2011). Scikit-learn: Machine learning in Python.
+\textit{JMLR, 12}, 2825--2830.
+
+
+\end{thebibliography}
+
+\end{document}
